@@ -88,8 +88,9 @@ def overlay(fr, t):
     put(fr, txt(LABEL, F_MED, 24, (235, 235, 235), 3), 60 + txt(LABEL, F_MED, 24, (235, 235, 235), 3).width / 2 - 40, 200, .7)
     if t < 5.2:                                  # opening POV line
         a = min(ease((t - .3) / .6), ease((5.2 - t) / .5))
-        put(fr, txt("POV: you found a road", F_BOLD, 66), W / 2, 380, a)
-        put(fr, txt("that only exists in dreams", F_BOLD, 66), W / 2, 460, a)
+        L1, L2 = os.environ.get("HOOK", "POV: you found a road|that only exists in dreams").split("|")
+        put(fr, txt(L1, F_BOLD, 66), W / 2, 380, a)
+        put(fr, txt(L2, F_BOLD, 66), W / 2, 460, a)
     for i, s in enumerate(starts):               # small world title at the start of each clip
         lt = t - s - (5.4 if i == 0 else .6)
         if 0 <= lt < 3.2:
@@ -98,7 +99,7 @@ def overlay(fr, t):
             put(fr, txt(WORLDS[i], F_SEMI, 58), W / 2, 1625, a)
     if t > 54.2:                                 # ending question
         a = ease((t - 54.2) / .6)
-        put(fr, txt("Which world would you ride to?", F_BOLD, 60, (40, 40, 50) if t > 58.9 else (255, 255, 255)), W / 2, 820, a)
+        put(fr, txt(os.environ.get("ASK", "Which world would you ride to?"), F_BOLD, 60, (40, 40, 50) if t > 58.9 else (255, 255, 255)), W / 2, 820, a)
         put(fr, txt("Comment 1 to 6", F_MED, 46, (60, 60, 70) if t > 58.9 else (255, 236, 200)), W / 2, 905, a)
 
 # ---------- 3. render with music
