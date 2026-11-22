@@ -54,9 +54,16 @@ for i in range(6):
 # segment lengths so the crossfaded total is exactly DUR
 seg = (DUR + 5 * XF) / 6
 inputs, filt = [], []
+def probe(p):
+    r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", p], capture_output=True, text=True)
+    return float(r.stdout.strip() or 0)
+
 for i, p in enumerate(paths):
     inputs += ["-i", p]
-    filt.append(f"[{i}:v]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS},setsar=1,"
+    have = probe(p) or seg
+    slow = min(max(seg / have, 1.0), 2.5)     # short clips (e.g. 5 s Wan/Colab clips) become smooth slow motion
+    sm = f"setpts={slow:.4f}*PTS,minterpolate=fps={FPS}:mi_mode=mci:mc_mode=aobmc:vsbmc=1," if slow > 1.05 else ""
+    filt.append(f"[{i}:v]{sm}scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS},setsar=1,"
                 f"tpad=stop_mode=clone:stop_duration={seg:.3f},trim=duration={seg:.3f},setpts=PTS-STARTPTS,format=yuv420p[v{i}]")
 prev = "v0"
 for i in range(1, 6):
