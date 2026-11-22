@@ -15,7 +15,8 @@ F_BOLD = "/usr/share/fonts/opentype/inter/InterDisplay-Bold.otf"
 F_SEMI = "/usr/share/fonts/opentype/inter/InterDisplay-SemiBold.otf"
 F_MED = "/usr/share/fonts/opentype/inter/Inter-Medium.otf"
 if not os.path.exists(F_SEMI): F_SEMI = F_BOLD
-WORLDS = ["The Floating Islands", "The Crystal Desert", "The Sky Ocean", "The Lantern Forest", "The Aurora River", "Home in the Clouds"]
+import json as _j
+WORLDS = _j.load(open(os.environ["WORLDS_JSON"])) if os.environ.get("WORLDS_JSON") else ["The Floating Islands", "The Crystal Desert", "The Sky Ocean", "The Lantern Forest", "The Aurora River", "Home in the Clouds"]
 
 def ease(x): x = min(max(x, 0), 1); return 1 - (1 - x) ** 3
 _c = {}
@@ -73,9 +74,11 @@ for y in range(H):
     gd.line([(0, y), (W, y)], fill=(0, 0, 0, a))
 starts = [i * (seg - XF) for i in range(6)]
 
+LABEL = os.environ.get("LABEL", "AI-GENERATED")
+
 def overlay(fr, t):
     fr.alpha_composite(grad)
-    put(fr, txt("AI-GENERATED", F_MED, 24, (235, 235, 235), 3), 140, 200, .7)
+    put(fr, txt(LABEL, F_MED, 24, (235, 235, 235), 3), 60 + txt(LABEL, F_MED, 24, (235, 235, 235), 3).width / 2 - 40, 200, .7)
     if t < 5.2:                                  # opening POV line
         a = min(ease((t - .3) / .6), ease((5.2 - t) / .5))
         put(fr, txt("POV: you found a road", F_BOLD, 66), W / 2, 380, a)
